@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Login - DevBoost</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    :root{
+      --blue-600:#0d6efd;
+      --blue-500:#0b5ed7;
+      --blue-100:#e9f2ff;
+      --text:#0b1a2b;
+      --card:#ffffff;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: Inter, Roboto, "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #eaf4ff 0%, #f8fbff 100%);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+    }
+    .card{
+      width:100%;
+      max-width:420px;
+      background:var(--card);
+      border-radius:12px;
+      box-shadow:0 8px 24px rgba(13,46,89,0.08);
+      padding:28px;
+      border:1px solid rgba(13,46,89,0.06);
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin-bottom:10px;
+    }
+    .logo{
+      width:44px;
+      height:44px;
+      border-radius:8px;
+      background:linear-gradient(135deg,var(--blue-600),var(--blue-500));
+      display:inline-block;
+      box-shadow:0 4px 12px rgba(11,78,215,0.18);
+    }
+    h2{
+      margin:0 0 18px 0;
+      font-size:20px;
+      color:var(--blue-600);
+    }
+    form{display:block}
+    label{
+      display:block;
+      font-size:13px;
+      margin-bottom:8px;
+    }
+    input[type="email"],
+    input[type="password"]{
+      width:100%;
+      padding:10px 12px;
+      margin-top:6px;
+      border-radius:8px;
+      border:1px solid rgba(11,78,215,0.12);
+      background: #fbfdff;
+      outline:none;
+      transition:box-shadow .12s, border-color .12s;
+      font-size:14px;
+    }
+    input:focus{
+      box-shadow:0 4px 12px rgba(11,78,215,0.08);
+      border-color:var(--blue-500);
+    }
+    .actions{
+      margin-top:16px;
+      display:flex;
+      gap:8px;
+      align-items:center;
+      justify-content:space-between;
+    }
+    button{
+      background:var(--blue-600);
+      color:#fff;
+      border:none;
+      padding:10px 16px;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:600;
+      box-shadow:0 6px 18px rgba(11,78,215,0.12);
+    }
+    button:active{transform:translateY(1px)}
+    #msg{
+      margin-top:12px;
+      font-size:14px;
+      color:#b02a2a;
+    }
+    .hint{
+      font-size:13px;
+      color:#255b9a;
+    }
+    a{ color:var(--blue-600); text-decoration:none; }
+    @media(max-width:480px){
+      .card{padding:20px}
+    }
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div>
+        <strong style="color:var(--blue-600)">DevBoost</strong><br>
+        <small class="hint">Accede a tu cuenta</small>
+      </div>
+    </div>
+
+    <h2>Iniciar sesión</h2>
+
+    <form id="loginForm" autocomplete="on" novalidate>
+      <label>
+        Email:
+        <input type="email" name="email" required placeholder="tu@correo.com">
+      </label>
+
+      <label>
+        Contraseña:
+        <input type="password" name="password" required placeholder="••••••••">
+      </label>
+
+      <div class="actions">
+        <button type="submit">Entrar</button>
+        <div style="font-size:13px"><a href="/register.html">Regístrate</a></div>
+      </div>
+
+      <div id="msg" role="status" aria-live="polite"></div>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const f = e.target;
+      const body = { email: f.email.value.trim(), password: f.password.value };
+      const msgEl = document.getElementById('msg');
+      msgEl.style.color = '#0b1a2b';
+      msgEl.textContent = 'Verificando...';
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (res.ok) {
+          localStorage.setItem('token', data.token);
+          msgEl.style.color = 'green';
+          msgEl.textContent = 'Login correcto. Bienvenido ' + (data.user.nombre || data.user.email);
+        } else {
+          msgEl.style.color = '#b02a2a';
+          msgEl.textContent = data.error || 'Credenciales inválidas';
+        }
+      } catch (err) {
+        msgEl.style.color = '#b02a2a';
+        msgEl.textContent = 'Error de conexión';
+      }
+    });
+  </script>
+</body>
+</html>

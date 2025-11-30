@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Registro - DevBoost</title>
+</head>
+<body>
+  <h2>Registro</h2>
+  <form id="registerForm">
+    <label>Nombre: <input name="nombre" required></label><br>
+    <label>Apellido paterno: <input name="apellido_paterno" required></label><br>
+    <label>Apellido materno: <input name="apellido_materno" required></label><br>
+    <label>Email: <input type="email" name="email" required></label><br>
+    <label>Contraseña: <input type="password" name="password" required></label><br>
+    <label>Confirmar contraseña: <input type="password" name="password_confirm" required></label><br>
+    <button type="submit">Registrar</button>
+  </form>
+  <div id="msg"></div>
+  <p>¿Ya tienes cuenta? <a href="/login.html">Entrar</a></p>
+
+  <script>
+    const f = document.getElementById('registerForm');
+    f.addEventListener('submit', async e => {
+      e.preventDefault();
+      const body = {
+        nombre: f.nombre.value.trim(),
+        apellido_paterno: f.apellido_paterno.value.trim(),
+        apellido_materno: f.apellido_materno.value.trim(),
+        email: f.email.value.trim(),
+        password: f.password.value,
+        password_confirm: f.password_confirm.value
+      };
+      const res = await fetch('/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
+      const data = await res.json();
+      const msg = document.getElementById('msg');
+      if (res.ok) {
+        msg.textContent = 'Registro correcto. Puedes iniciar sesión.';
+      } else {
+        msg.textContent = data.error || 'Error';
+      }
+    });
+  </script>
+</body>
+</html>
